@@ -7,7 +7,7 @@ namespace Org.Interactivity.Recognizer
 {
     public class GestureRecognizer : TriggerBase<FrameworkElement>
     {
-        private const double Threshold = 0.1;
+        private const int TapThreshold = 40;
 
         public Gesture TriggerOnGesture { get; set; }
 
@@ -38,32 +38,27 @@ namespace Org.Interactivity.Recognizer
 
         private void HandleManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
         {
-            if (IsWorthLookingAtThis(e.TotalManipulation.Translation.Length) || //swipe
-                IsWorthLookingAtThis(e.FinalVelocities.LinearVelocity.Length)) //flick
-            {
-                InvokeActions(ToSwipeGesture(e.TotalManipulation.Translation, e.ManipulationOrigin));
-            }
-            else //tap
-            {
-                InvokeActions(Gesture.Tap);
-            }
+                InvokeActions(ToSwipeGesture(e.TotalManipulation.Translation));
         }
 
-        private static bool IsWorthLookingAtThis(double length)
+        private static Gesture ToSwipeGesture(Vector translation)
         {
-            return length > Threshold;
-        }
-
-        private static Gesture ToSwipeGesture(Vector vector, Point origin)
-        {
-            var isVerticalGesture = Math.Abs(vector.Y) > Math.Abs(vector.X);
-            if (isVerticalGesture)
+            var deltaX = translation.X;
+            var deltaY = translation.Y;
+            var distX = Math.Abs(deltaX);
+            var distY = Math.Abs(deltaY);
+            if (deltaX <= TapThreshold && deltaY <= TapThreshold)
             {
-                //vertical swipe
-                return vector.Y > 0 ? Gesture.SwipeUp : Gesture.SwipeDown;
+                return Gesture.Tap;
             }
-            //horizontal
-            return vector.X > 0 ? Gesture.SwipeRight : Gesture.SwipeLeft;
+            else if (distY >= distX) // bias towards vertical swipe over horizontal if distances are equal
+            {
+                return deltaY > 0 ? Gesture.SwipeDown : Gesture.SwipeUp;
+            }
+            else
+            {
+                return deltaX > 0 ? Gesture.SwipeRight : Gesture.SwipeLeft;
+            }
         }
     }
 
