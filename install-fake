@@ -1,0 +1,1 @@
+"dependencies/nuget/nuget.exe" "install" "FAKE.Core" "-OutputDirectory" "dependencies" "-ExcludeVersion"

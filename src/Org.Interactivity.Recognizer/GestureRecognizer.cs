@@ -5,17 +5,28 @@ using System.Windows.Interactivity;
 
 namespace Org.Interactivity.Recognizer
 {
+    /// <summary>
+    /// Interaction trigger that performs actions when specific gestures are recognised.
+    /// </summary>
     public class GestureRecognizer : TriggerBase<FrameworkElement>
     {
         private const int TapThreshold = 40;
 
+        /// <summary>
+        /// Gesture that will trigger associated actions.
+        /// </summary>
         public Gesture TriggerOnGesture { get; set; }
 
+        /// <summary>
+        /// Create GestureRecognizer that triggers on all gestures.
+        /// </summary>
         public GestureRecognizer()
         {
             TriggerOnGesture = Gesture.All;
         }
 
+        /// <summary>
+        /// </summary>
         protected override void OnAttached()
         {
             base.OnAttached();
@@ -23,6 +34,8 @@ namespace Org.Interactivity.Recognizer
             AssociatedObject.ManipulationCompleted += HandleManipulationCompleted;
         }
 
+        /// <summary>
+        /// </summary>
         protected override void OnDetaching()
         {
             AssociatedObject.ManipulationStarting -= HandleManipulationStarting;
@@ -62,13 +75,26 @@ namespace Org.Interactivity.Recognizer
         }
     }
 
+    /// <summary>
+    /// Recognisable gestures. Has <see cref="FlagsAttribute">FlagsAttribute</see> to allow combinations
+    /// of values (e.g. <code>Gesture.SwipeUp | Gesture.SwipeDown</code>).
+    /// </summary>
+    [Flags]
     public enum Gesture : byte
     {
-        All = 0,
-        SwipeUp,
-        SwipeDown,
-        SwipeLeft,
-        SwipeRight,
-        Tap
+        /// <summary>None </summary>
+        None = 0,
+        /// <summary>Swipe up</summary>
+        SwipeUp = 1,
+        /// <summary>Swipe down</summary>
+        SwipeDown = 2,
+        /// <summary>Swipe left</summary>
+        SwipeLeft = 4,
+        /// <summary>Swipe right</summary>
+        SwipeRight = 8,
+        /// <summary>Tap</summary>
+        Tap = 16,
+        /// <summary>All gestures</summary>
+        All = SwipeUp | SwipeDown | SwipeLeft | SwipeRight | Tap
     }
 }
