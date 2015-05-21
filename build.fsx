@@ -10,8 +10,13 @@ open System.Text.RegularExpressions
 let pathConcat a = String.concat (string Path.DirectorySeparatorChar) a
 
 let config = getBuildParamOrDefault "config" "Release"
-let outputPath = pathConcat ["output"; config]
-let buildSlns = [ pathConcat ["src"; "GestureRecognizer.sln"] ]
+let coreProjPath = "src" </> "Org.Interactivity.Recognizer"
+let buildSlns = [ "src" </> "GestureRecognizer.sln" ]
+let outputPath = "output" </> config
+let projectId = "WPFGestureRecognizer"
+let projectName = "WPF Gesture Recognizer"
+let projectDescription = "WPF interactivity trigger, running actions when swipe and/or tap gestures are detected."
+let projectOwners = [ "Rod Landaeta" ]
 
 let releaseInfo =
     ReadFile "release_notes.md"
@@ -21,24 +26,42 @@ Target "Clean" <| fun _ ->
     CleanDirs [ outputPath ]
     
 Target "Version" <| fun _ ->
-    let ver = releaseInfo.SemVer |> string
+    let ver = releaseInfo.AssemblyVersion
     let gitHash = Git.Information.getCurrentHash()
     printfn "##teamcity[buildNumber '%s']" ver
-    let appId = "c93fad81-4f16-40b0-b65a-383e1d1ef26e"
-    let getAttributes name id =
-        let productString = sprintf "%s %s (%s)" name ver gitHash
+    let productString = sprintf "%s %s (%s)" projectName ver gitHash
+        
+    CreateCSharpAssemblyInfo
+        (pathConcat [coreProjPath; "Properties"; "AssemblyInfo.cs" ])
         [ Attribute.Title productString
           Attribute.Description productString
-          Attribute.Guid id
-          Attribute.Product name
+          Attribute.Guid "c93fad81-4f16-40b0-b65a-383e1d1ef26e"
+          Attribute.Product projectName
+          Attribute.Company (projectOwners |> String.concat ", ")
           Attribute.Version ver
           Attribute.FileVersion ver ]
-    CreateCSharpAssemblyInfo "src/Org.Interactivity.Recognizer/Properties/AssemblyInfo.cs" (getAttributes "Gesture Recognizer" appId)
 
 Target "Build" <| fun _ -> 
     buildSlns
     |> MSBuild null "Build" [ "Configuration", config ]
     |> ignore
+
+Target "Nuget" <| fun _ ->
+    let nugetOutput = pathConcat [outputPath; "nuget"]
+    CreateDir nugetOutput
+    (coreProjPath </> "Org.Interactivity.Recognizer.nuspec")
+    |> NuGet (fun p ->
+        { p with
+            Project = projectId
+            Title = projectName
+            Authors = projectOwners
+            Description = projectDescription
+            OutputPath = nugetOutput
+            WorkingDir = pathConcat [outputPath; "Org.Interactivity.Recognizer"]
+            ReleaseNotes = releaseInfo.Notes |> String.concat "\n"
+            Dependencies = getDependencies (coreProjPath </> "packages.config")
+            Version = releaseInfo.AssemblyVersion
+        })
 
 Target "UpdateNuget" <| fun _ ->
     let nugetPath = pathConcat ["dependencies";"nuget";"nuget.exe"]
@@ -53,5 +76,5 @@ Target "-T" <| fun _ ->
 Target "Full" DoNothing
 
 // Dependencies
-"Clean" ==> "Version" ==> "Build" ==> "Full"
+"Clean" ==> "Version" ==> "Build" ==> "Nuget" ==> "Full"
 RunTargetOrDefault "Full"
