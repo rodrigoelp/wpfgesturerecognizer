@@ -4,26 +4,33 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         Title="MainWindow" Height="350" Width="525"
         xmlns:recognizer="clr-namespace:Org.Interactivity.Recognizer;assembly=Org.Interactivity.Recognizer"
-        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions">
+        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" WindowState="Maximized">
     <Grid>
-        <Grid x:Name="TouchArea" Background="LightPink">
+        <Rectangle Stroke="#939393" Margin="5" StrokeThickness="2" StrokeDashArray="4 2" SnapsToDevicePixels="True"/>
+        <Grid x:Name="TouchArea" Margin="10" Background="Gray">
             <i:Interaction.Triggers>
                 <recognizer:GestureRecognizer TriggerOnGesture="SwipeDown">
                     <ei:ChangePropertyAction TargetName="TouchArea" PropertyName="Background" Value="DarkBlue" />
+                    <ei:ChangePropertyAction TargetName="GestureRecognizedAs" PropertyName="Text" Value="Last gesture was Swipe Down" />
                 </recognizer:GestureRecognizer>
                 <recognizer:GestureRecognizer TriggerOnGesture="SwipeUp">
                     <ei:ChangePropertyAction TargetName="TouchArea" PropertyName="Background" Value="LightBlue" />
+                    <ei:ChangePropertyAction TargetName="GestureRecognizedAs" PropertyName="Text" Value="Last gesture was Swipe Up" />
                 </recognizer:GestureRecognizer>
                 <recognizer:GestureRecognizer TriggerOnGesture="SwipeRight">
                     <ei:ChangePropertyAction TargetName="TouchArea" PropertyName="Background" Value="LightGreen" />
+                    <ei:ChangePropertyAction TargetName="GestureRecognizedAs" PropertyName="Text" Value="Last gesture was Swipe Right" />
                 </recognizer:GestureRecognizer>
                 <recognizer:GestureRecognizer TriggerOnGesture="SwipeLeft">
                     <ei:ChangePropertyAction TargetName="TouchArea" PropertyName="Background" Value="DarkGreen" />
+                    <ei:ChangePropertyAction TargetName="GestureRecognizedAs" PropertyName="Text" Value="Last gesture was Swipe Left" />
                 </recognizer:GestureRecognizer>
                 <recognizer:GestureRecognizer TriggerOnGesture="Tap">
                     <ei:ChangePropertyAction TargetName="TouchArea" PropertyName="Background" Value="LightPink" />
+                    <ei:ChangePropertyAction TargetName="GestureRecognizedAs" PropertyName="Text" Value="Last gesture was a Tap" />
                 </recognizer:GestureRecognizer>
             </i:Interaction.Triggers>
+            <TextBlock x:Name="GestureRecognizedAs" VerticalAlignment="Top" HorizontalAlignment="Center" />
         </Grid>
     </Grid>
 </Window>
