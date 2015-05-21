@@ -61,6 +61,8 @@ Target "Nuget" <| fun _ ->
             ReleaseNotes = releaseInfo.Notes |> String.concat "\n"
             Dependencies = getDependencies (coreProjPath </> "packages.config")
             Version = releaseInfo.AssemblyVersion
+            AccessKey = getBuildParamOrDefault "nugetkey" ""
+            Publish = hasBuildParam "nugetkey"
         })
 
 Target "UpdateNuget" <| fun _ ->
