@@ -13,7 +13,9 @@ let config = getBuildParamOrDefault "config" "Release"
 let coreProjPath = "src" </> "Org.Interactivity.Recognizer"
 let buildSlns = [ "src" </> "GestureRecognizer.sln" ]
 let outputPath = "output" </> config
+let mainOutputPath = outputPath </> "Org.Interactivity.Recognizer"
 let projectId = "WPFGestureRecognizer"
+let packagePath = outputPath </> "nuget-package" 
 let projectName = "WPF Gesture Recognizer"
 let projectDescription = "WPF interactivity trigger, running actions when swipe and/or tap gestures are detected."
 let projectOwners = [ "Rod Landaeta" ]
@@ -46,8 +48,14 @@ Target "Build" <| fun _ ->
     |> MSBuild null "Build" [ "Configuration", config ]
     |> ignore
 
+Target "Package" <| fun _ -> 
+    let lib = packagePath </> "lib" </> "net40"
+    let dlls = !! "*.dll" ++ "*.xml" |> SetBaseDir mainOutputPath
+    CreateDir lib
+    CopyFiles lib dlls
+
 Target "Nuget" <| fun _ ->
-    let nugetOutput = pathConcat [outputPath; "nuget"]
+    let nugetOutput = outputPath </> "nuget"
     CreateDir nugetOutput
     (coreProjPath </> "Org.Interactivity.Recognizer.nuspec")
     |> NuGet (fun p ->
@@ -57,7 +65,7 @@ Target "Nuget" <| fun _ ->
             Authors = projectOwners
             Description = projectDescription
             OutputPath = nugetOutput
-            WorkingDir = pathConcat [outputPath; "Org.Interactivity.Recognizer"]
+            WorkingDir = packagePath
             ReleaseNotes = releaseInfo.Notes |> String.concat "\n"
             Dependencies = getDependencies (coreProjPath </> "packages.config")
             Version = releaseInfo.AssemblyVersion
@@ -78,5 +86,5 @@ Target "-T" <| fun _ ->
 Target "Full" DoNothing
 
 // Dependencies
-"Clean" ==> "Version" ==> "Build" ==> "Nuget" ==> "Full"
+"Clean" ==> "Version" ==> "Build" ==> "Package" ==> "Nuget" ==> "Full"
 RunTargetOrDefault "Full"
