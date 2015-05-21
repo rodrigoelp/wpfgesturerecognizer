@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>@project@</id>
+    <title>@title@</title>
+    <version>$version$</version>
+    <authors>@authors@</authors>
+    <owners>@authors@</owners>
+    <licenseUrl>https://github.com/rodrigoelp/wpfgesturerecognizer/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/rodrigoelp/wpfgesturerecognizer</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>@description@</description>
+    <releaseNotes>@releaseNotes@</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>wpf</tags>
+    @dependencies@
+  </metadata>
+</package>

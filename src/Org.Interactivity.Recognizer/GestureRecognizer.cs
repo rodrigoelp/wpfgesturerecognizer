@@ -5,29 +5,47 @@ using System.Windows.Interactivity;
 
 namespace Org.Interactivity.Recognizer
 {
+    /// <summary>
+    /// Interaction trigger that performs actions when specific gestures are recognised.
+    /// </summary>
     public sealed class GestureRecognizer : TriggerBase<FrameworkElement>
     {
         //This magic number corresponds to observations of what makes a tap versus a swipe or flick.
         private const int TapThreshold = 40;
 
+        /// <summary>
+        /// AutoManipulationEnabled property dependency property key.
+        /// </summary>
         public static readonly DependencyProperty AutoManipulationEnabledProperty = DependencyProperty.Register(
             "AutoManipulationEnabled", typeof(bool), typeof(GestureRecognizer), new PropertyMetadata(true, HandleAutoManipulationEnabled));
 
+        /// <summary>
+        /// TriggerOnGesture property dependency property key.
+        /// </summary>
         public static readonly DependencyProperty TriggerOnGestureProperty = DependencyProperty.Register(
             "TriggerOnGesture", typeof(Gesture), typeof(GestureRecognizer), new PropertyMetadata(Gesture.All));
 
+        /// <summary>
+        /// When turned on, it sets the <see cref="UIElement.IsManipulationEnabled"/> property on the <see cref="TriggerBase{T}.AssociatedObject"/> to detect gestures.
+        /// By default is set to True.
+        /// </summary>
         public bool AutoManipulationEnabled
         {
             get { return (bool)GetValue(AutoManipulationEnabledProperty); }
             set { SetValue(AutoManipulationEnabledProperty, value); }
         }
 
+        /// <summary>
+        /// Gesture that will trigger associated actions.
+        /// </summary>
         public Gesture TriggerOnGesture
         {
             get { return (Gesture)GetValue(TriggerOnGestureProperty); }
             set { SetValue(TriggerOnGestureProperty, value); }
         }
 
+        /// <summary>
+        /// </summary>
         protected override void OnAttached()
         {
             base.OnAttached();
@@ -43,6 +61,8 @@ namespace Org.Interactivity.Recognizer
             };
         }
 
+        /// <summary>
+        /// </summary>
         protected override void OnDetaching()
         {
             base.OnDetaching();
@@ -95,13 +115,26 @@ namespace Org.Interactivity.Recognizer
         }
     }
 
+    /// <summary>
+    /// Recognisable gestures. Has <see cref="FlagsAttribute">FlagsAttribute</see> to allow combinations
+    /// of values (e.g. <code>Gesture.SwipeUp | Gesture.SwipeDown</code>).
+    /// </summary>
+    [Flags]
     public enum Gesture : byte
     {
-        All = 0,
-        SwipeUp,
-        SwipeDown,
-        SwipeLeft,
-        SwipeRight,
-        Tap
+        /// <summary>None </summary>
+        None = 0,
+        /// <summary>Swipe up</summary>
+        SwipeUp = 1,
+        /// <summary>Swipe down</summary>
+        SwipeDown = 2,
+        /// <summary>Swipe left</summary>
+        SwipeLeft = 4,
+        /// <summary>Swipe right</summary>
+        SwipeRight = 8,
+        /// <summary>Tap</summary>
+        Tap = 16,
+        /// <summary>All gestures</summary>
+        All = SwipeUp | SwipeDown | SwipeLeft | SwipeRight | Tap
     }
 }
