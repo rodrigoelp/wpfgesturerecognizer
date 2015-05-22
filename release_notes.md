@@ -1,7 +1,8 @@
-### 1.0.2 (unreleased)
+### 1.0.2 (Released May 2015)
 * Expose TapThreshold property to allow tweaking of tap detection.
 * Add option to detect taps using mix of translation and velocity.
   Based on analysis performed by Ryan Melman.
+* Added ReadMe file to repository with an example.
 
 ### 1.0.1 (Released May 2015)
 

@@ -162,10 +162,10 @@ namespace Org.Interactivity.Recognizer
             const double translationLengthCoeff = -0.029;
             const double inertiaLengthCoeff = -0.029;
             const double intercept = 1.638;
-            var regressionScore = translationLengthCoeff*translation.Length + inertiaLengthCoeff*linearVelocity.Length +
+            var regressionScore = translationLengthCoeff * translation.Length + inertiaLengthCoeff * linearVelocity.Length +
                                     intercept;
             var inverseProbablity = 1 + Math.Exp(-regressionScore);
-            return 1/inverseProbablity > 0.5;
+            return 1 / inverseProbablity > 0.5;
 
         }
     }
