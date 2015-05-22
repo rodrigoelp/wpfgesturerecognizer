@@ -1,3 +1,6 @@
+### 1.0.2 (unreleased)
+* Expose TapThreshold property to allow tweaking of tap detection.
+
 ### 1.0.1 (Released May 2015)
 
 * Fixed nuget packaging issue that didn't add a reference to this library.

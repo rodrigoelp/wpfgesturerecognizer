@@ -11,7 +11,7 @@ namespace Org.Interactivity.Recognizer
     public sealed class GestureRecognizer : TriggerBase<FrameworkElement>
     {
         //This magic number corresponds to observations of what makes a tap versus a swipe or flick.
-        private const int TapThreshold = 40;
+        private const int DefaultTapThreshold = 40;
 
         /// <summary>
         /// AutoManipulationEnabled property dependency property key.
@@ -24,6 +24,12 @@ namespace Org.Interactivity.Recognizer
         /// </summary>
         public static readonly DependencyProperty TriggerOnGestureProperty = DependencyProperty.Register(
             "TriggerOnGesture", typeof(Gesture), typeof(GestureRecognizer), new PropertyMetadata(Gesture.All));
+
+        /// <summary>
+        /// Set the tap threshold. If swipes are being recognised as taps lowering this value may help.
+        /// </summary>
+        public static readonly DependencyProperty TapThresholdProperty = DependencyProperty.Register(
+            "TapThreshold", typeof(int), typeof(GestureRecognizer), new PropertyMetadata(DefaultTapThreshold));
 
         /// <summary>
         /// When turned on, it sets the <see cref="UIElement.IsManipulationEnabled"/> property on the <see cref="TriggerBase{T}.AssociatedObject"/> to detect gestures.
@@ -42,6 +48,15 @@ namespace Org.Interactivity.Recognizer
         {
             get { return (Gesture)GetValue(TriggerOnGestureProperty); }
             set { SetValue(TriggerOnGestureProperty, value); }
+        }
+
+        /// <summary>
+        /// Set the tap threshold. If swipes are being recognised as taps lowering this value may help.
+        /// </summary>
+        public int TapThreshold
+        {
+            get { return (int)GetValue(TapThresholdProperty); }
+            set { SetValue(TapThresholdProperty, value); }
         }
 
         /// <summary>
@@ -94,7 +109,7 @@ namespace Org.Interactivity.Recognizer
             }
         }
 
-        private static Gesture ToSwipeGesture(Vector translation)
+        private Gesture ToSwipeGesture(Vector translation)
         {
             var deltaX = translation.X;
             var deltaY = translation.Y;
