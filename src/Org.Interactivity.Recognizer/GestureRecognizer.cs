@@ -11,7 +11,7 @@ namespace Org.Interactivity.Recognizer
     public sealed class GestureRecognizer : TriggerBase<FrameworkElement>
     {
         //This magic number corresponds to observations of what makes a tap versus a swipe or flick.
-        private const int TapThreshold = 40;
+        private const int DefaultTapThreshold = 40;
 
         /// <summary>
         /// AutoManipulationEnabled property dependency property key.
@@ -24,6 +24,19 @@ namespace Org.Interactivity.Recognizer
         /// </summary>
         public static readonly DependencyProperty TriggerOnGestureProperty = DependencyProperty.Register(
             "TriggerOnGesture", typeof(Gesture), typeof(GestureRecognizer), new PropertyMetadata(Gesture.All));
+
+        /// <summary>
+        /// Set the tap threshold. If swipes are being recognised as taps lowering this value may help.
+        /// </summary>
+        public static readonly DependencyProperty TapThresholdProperty = DependencyProperty.Register(
+            "TapThreshold", typeof(int), typeof(GestureRecognizer), new PropertyMetadata(DefaultTapThreshold));
+
+        /// <summary>
+        /// Use velocity for tap detection, rather than just gesture translation size. Defaults to off.
+        /// </summary>
+        public static readonly DependencyProperty UseVelocityForTapDetectionProperty = DependencyProperty.Register(
+            "UseVelocityForTapDetection", typeof(bool), typeof(GestureRecognizer), new PropertyMetadata(false));
+
 
         /// <summary>
         /// When turned on, it sets the <see cref="UIElement.IsManipulationEnabled"/> property on the <see cref="TriggerBase{T}.AssociatedObject"/> to detect gestures.
@@ -42,6 +55,24 @@ namespace Org.Interactivity.Recognizer
         {
             get { return (Gesture)GetValue(TriggerOnGestureProperty); }
             set { SetValue(TriggerOnGestureProperty, value); }
+        }
+
+        /// <summary>
+        /// Set the tap threshold. If swipes are being recognised as taps lowering this value may help.
+        /// </summary>
+        public int TapThreshold
+        {
+            get { return (int)GetValue(TapThresholdProperty); }
+            set { SetValue(TapThresholdProperty, value); }
+        }
+
+        /// <summary>
+        /// Use velocity for tap detection, rather than just gesture translation size. Defaults to <code>false</code>.
+        /// </summary>
+        public bool UseVelocityForTapDetection
+        {
+            get { return (bool)GetValue(UseVelocityForTapDetectionProperty); }
+            set { SetValue(UseVelocityForTapDetectionProperty, value); }
         }
 
         /// <summary>
@@ -87,20 +118,23 @@ namespace Org.Interactivity.Recognizer
 
         private void HandleManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
         {
-            var gesture = ToSwipeGesture(e.TotalManipulation.Translation);
+            var gesture = ToSwipeGesture(e.TotalManipulation.Translation, e.FinalVelocities.LinearVelocity);
             if (TriggerOnGesture == Gesture.All || TriggerOnGesture == gesture)
             {
                 InvokeActions(gesture);
             }
         }
 
-        private static Gesture ToSwipeGesture(Vector translation)
+        private Gesture ToSwipeGesture(Vector translation, Vector linearVelocity)
         {
             var deltaX = translation.X;
             var deltaY = translation.Y;
             var distX = Math.Abs(deltaX);
             var distY = Math.Abs(deltaY);
-            if (distX <= TapThreshold && distY <= TapThreshold)
+            var isTap = UseVelocityForTapDetection
+                ? DetectTapFromVelocity(translation, linearVelocity)
+                : distX <= TapThreshold && distY <= TapThreshold;
+            if (isTap)
             {
                 return Gesture.Tap;
             }
@@ -112,6 +146,27 @@ namespace Org.Interactivity.Recognizer
             {
                 return deltaX > 0 ? Gesture.SwipeRight : Gesture.SwipeLeft;
             }
+        }
+
+        /// <summary>
+        /// Try to detect tap from a mix of translation and velocity.
+        /// </summary>
+        /// <remarks>
+        /// Based on logistical regression over 600 samples. Analysis done by Ryan Melman.
+        /// </remarks>
+        /// <param name="translation"></param>
+        /// <param name="linearVelocity"></param>
+        /// <returns></returns>
+        private static bool DetectTapFromVelocity(Vector translation, Vector linearVelocity)
+        {
+            const double translationLengthCoeff = -0.029;
+            const double inertiaLengthCoeff = -0.029;
+            const double intercept = 1.638;
+            var regressionScore = translationLengthCoeff*translation.Length + inertiaLengthCoeff*linearVelocity.Length +
+                                    intercept;
+            var inverseProbablity = 1 + Math.Exp(-regressionScore);
+            return 1/inverseProbablity > 0.5;
+
         }
     }
 
