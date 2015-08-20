@@ -10,7 +10,7 @@ This library wraps those events so you don't have to go through the same process
 
 Grab [WPFGestureRecognizer from NuGet](https://www.nuget.org/packages/WPFGestureRecognizer/) and add it to your references in your project (On Visual Studio is just add a nuget package to your WPF application).
 
-Then on your xaml page you should add a recognition area. It can be any [UI element](https://msdn.microsoft.com/en-us/library/system.windows.frameworkelement%28v=vs.110%29.aspx) such as a Border or a Grid. Add [`System.Widnows.Interactivity`](https://msdn.microsoft.com/en-us/library/system.windows.interactivity\(v=expression.40\).aspx) and `Org.Interactivity.Recognizer` and off you go.
+Then on your xaml page you should add a recognition area. It can be any [UI element](https://msdn.microsoft.com/en-us/library/system.windows.frameworkelement%28v=vs.110%29.aspx) such as a Border or a Grid. Add [`System.Widnows.Interactivity`](https://msdn.microsoft.com/en-us/library/system.windows.interactivity\(v=expression.45\).aspx) and `Org.Interactivity.Recognizer` and off you go.
 
 #### Simple example To start with:
 ```xml

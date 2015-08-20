@@ -62,6 +62,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\readme.md">
+      <Link>readme.md</Link>
+    </None>
+    <None Include="..\..\release_notes.md">
+      <Link>release_notes.md</Link>
+    </None>
     <None Include="Org.Interactivity.Recognizer.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

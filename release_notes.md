@@ -1,3 +1,6 @@
+### 1.0.3 (Released May 2015)
+* Change package dependency to an internal dependency to include latest binaries of Microsoft Expression SDK for .net framework 4.6
+
 ### 1.0.2 (Released May 2015)
 * Expose TapThreshold property to allow tweaking of tap detection.
 * Add option to detect taps using mix of translation and velocity.
