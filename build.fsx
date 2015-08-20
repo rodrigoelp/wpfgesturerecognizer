@@ -49,7 +49,7 @@ Target "Build" <| fun _ ->
     |> ignore
 
 Target "Package" <| fun _ -> 
-    let lib = packagePath </> "lib" </> "net40"
+    let lib = packagePath </> "lib" </> "net46"
     let dlls = !! "*.dll" ++ "*.xml" |> SetBaseDir mainOutputPath
     CreateDir lib
     CopyFiles lib dlls
@@ -67,7 +67,6 @@ Target "Nuget" <| fun _ ->
             OutputPath = nugetOutput
             WorkingDir = packagePath
             ReleaseNotes = releaseInfo.Notes |> String.concat "\n"
-            Dependencies = getDependencies (coreProjPath </> "packages.config")
             Version = releaseInfo.AssemblyVersion
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey"
