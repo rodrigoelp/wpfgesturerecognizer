@@ -104,7 +104,7 @@ namespace Org.Interactivity.Recognizer
         private static void HandleAutoManipulationEnabled(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var instance = d as GestureRecognizer;
-            if (instance != null && instance.AssociatedObject != null)
+            if (instance?.AssociatedObject != null)
             {
                 instance.AssociatedObject.IsManipulationEnabled = instance.AutoManipulationEnabled;
             }
