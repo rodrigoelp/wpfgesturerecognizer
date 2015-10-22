@@ -10,10 +10,26 @@
         <Grid x:Name="TouchArea" Margin="10" Background="Gray">
             <i:Interaction.Triggers>
                 <recognizer:GestureRecognizer TriggerOnGesture="SwipeDown">
-                    <ei:ChangePropertyAction TargetName="TouchArea" PropertyName="Background" Value="DarkBlue" />
-                    <ei:ChangePropertyAction TargetName="GestureRecognizedAs" PropertyName="Text" Value="Last gesture was Swipe Down" />
+                    <ei:ChangePropertyAction TargetName="TouchArea" PropertyName="Background" Value="#000080" />
+                    <ei:ChangePropertyAction TargetName="GestureRecognizedAs" PropertyName="Text" Value="Last gesture was Swipe Down with a single touch" />
                 </recognizer:GestureRecognizer>
-                <recognizer:GestureRecognizer TriggerOnGesture="SwipeUp">
+                <recognizer:GestureRecognizer TriggerOnGesture="SwipeDown" GestureModifier="TwoFingers">
+                    <ei:ChangePropertyAction TargetName="TouchArea" PropertyName="Background" Value="#19198c" />
+                    <ei:ChangePropertyAction TargetName="GestureRecognizedAs" PropertyName="Text" Value="Last gesture was Swipe Down with two touches" />
+                </recognizer:GestureRecognizer>
+                <recognizer:GestureRecognizer TriggerOnGesture="SwipeDown" GestureModifier="ThreeFingers">
+                    <ei:ChangePropertyAction TargetName="TouchArea" PropertyName="Background" Value="#323299" />
+                    <ei:ChangePropertyAction TargetName="GestureRecognizedAs" PropertyName="Text" Value="Last gesture was Swipe Down with three touches" />
+                </recognizer:GestureRecognizer>
+                <recognizer:GestureRecognizer TriggerOnGesture="SwipeDown" GestureModifier="FourFingers">
+                    <ei:ChangePropertyAction TargetName="TouchArea" PropertyName="Background" Value="#4c4ca6" />
+                    <ei:ChangePropertyAction TargetName="GestureRecognizedAs" PropertyName="Text" Value="Last gesture was Swipe Down with four touches" />
+                </recognizer:GestureRecognizer>
+                <recognizer:GestureRecognizer TriggerOnGesture="SwipeDown" GestureModifier="FiveFingers">
+                    <ei:ChangePropertyAction TargetName="TouchArea" PropertyName="Background" Value="#6666b2" />
+                    <ei:ChangePropertyAction TargetName="GestureRecognizedAs" PropertyName="Text" Value="Last gesture was Swipe Down with five touches" />
+                </recognizer:GestureRecognizer>
+                <recognizer:GestureRecognizer TriggerOnGesture="SwipeUp" GestureModifier="Any">
                     <ei:ChangePropertyAction TargetName="TouchArea" PropertyName="Background" Value="LightBlue" />
                     <ei:ChangePropertyAction TargetName="GestureRecognizedAs" PropertyName="Text" Value="Last gesture was Swipe Up" />
                 </recognizer:GestureRecognizer>

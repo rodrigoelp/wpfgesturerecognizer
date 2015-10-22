@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
@@ -7,6 +9,11 @@ namespace Org.Interactivity.Recognizer
 {
     /// <summary>
     /// Interaction trigger that performs actions when specific gestures are recognised.
+    /// <note type="note">
+    /// The implementation will handle up to 5 digits (touch inputs) as there are lots of tablets with that limit.
+    /// But it can easily be expanded to 10 digits if that is required,
+    /// although I am not sure how useful it would be to do a 10 finger swipe.
+    /// </note>
     /// </summary>
     public sealed class GestureRecognizer : TriggerBase<FrameworkElement>
     {
@@ -37,6 +44,13 @@ namespace Org.Interactivity.Recognizer
         public static readonly DependencyProperty UseVelocityForTapDetectionProperty = DependencyProperty.Register(
             "UseVelocityForTapDetection", typeof(bool), typeof(GestureRecognizer), new PropertyMetadata(false));
 
+        /// <summary>
+        /// GestureModifier dependency property key.
+        /// </summary>
+        public static readonly DependencyProperty GestureModifierProperty = DependencyProperty.Register(
+            "GestureModifier", typeof(GestureModifier), typeof(GestureRecognizer), new PropertyMetadata(GestureModifier.OneFinger));
+
+        private readonly IDictionary<int, int> _touchRegistry = new Dictionary<int, int>();
 
         /// <summary>
         /// When turned on, it sets the <see cref="UIElement.IsManipulationEnabled"/> property on the <see cref="TriggerBase{T}.AssociatedObject"/> to detect gestures.
@@ -76,6 +90,16 @@ namespace Org.Interactivity.Recognizer
         }
 
         /// <summary>
+        /// Can be used to increase the number of points to be track to trigger a gesture (swipe with one finger, two or more).
+        /// By default a GestureRecognizer instance will be tracking a single digit.
+        /// </summary>
+        public GestureModifier GestureModifier
+        {
+            get { return (GestureModifier)GetValue(GestureModifierProperty); }
+            set { SetValue(GestureModifierProperty, value); }
+        }
+
+        /// <summary>
         /// </summary>
         protected override void OnAttached()
         {
@@ -89,6 +113,7 @@ namespace Org.Interactivity.Recognizer
             {
                 AssociatedObject.ManipulationStarting += HandleManipulationStarting;
                 AssociatedObject.ManipulationCompleted += HandleManipulationCompleted;
+                AssociatedObject.ManipulationDelta += HandleManipulationDelta;
             };
         }
 
@@ -99,6 +124,7 @@ namespace Org.Interactivity.Recognizer
             base.OnDetaching();
             AssociatedObject.ManipulationStarting -= HandleManipulationStarting;
             AssociatedObject.ManipulationCompleted -= HandleManipulationCompleted;
+            AssociatedObject.ManipulationDelta -= HandleManipulationDelta;
         }
 
         private static void HandleAutoManipulationEnabled(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -114,15 +140,78 @@ namespace Org.Interactivity.Recognizer
         {
             e.ManipulationContainer = AssociatedObject;
             e.Mode = ManipulationModes.All;
+            ClearRegisteredTouches();
         }
 
         private void HandleManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
         {
             var gesture = ToSwipeGesture(e.TotalManipulation.Translation, e.FinalVelocities.LinearVelocity);
-            if (TriggerOnGesture == Gesture.All || TriggerOnGesture == gesture)
+            var modifier = GetMostCommonNumberOfTouchInputs(_touchRegistry).Map(TouchesToGestureModifier);
+
+            // Raising actions if is any gesture with any modifier (or a matching modifier).
+            if (TriggerOnGesture == Gesture.All && (GestureModifier == GestureModifier.Any || modifier == GestureModifier.ToOption()))
             {
                 InvokeActions(gesture);
             }
+            // otherwise raising actions for taps if modifier could not be identifier (tapping does not generate deltas) or it has a matching modifier.
+            else if (TriggerOnGesture == Gesture.Tap && gesture == Gesture.Tap && (modifier.IsEmpty() || modifier == GestureModifier.ToOption()))
+            {
+                InvokeActions(gesture);
+            }
+            // finally, raising for any other gesture with the appropriate modifier.
+            else if (TriggerOnGesture == gesture && modifier == GestureModifier.ToOption())
+            {
+                InvokeActions(gesture);
+            }
+        }
+
+        private void HandleManipulationDelta(object sender, ManipulationDeltaEventArgs e)
+        {
+            var element = e.ManipulationContainer as UIElement;
+            RegisterNumberOfTouchesOn(element);
+        }
+
+        private void ClearRegisteredTouches()
+        {
+            _touchRegistry.Clear();
+        }
+
+        private void RegisterNumberOfTouchesOn(UIElement element)
+        {
+            if (element != null)
+            {
+                var touches = element.TouchesOver.Count();
+                if (!_touchRegistry.ContainsKey(touches))
+                {
+                    _touchRegistry[touches] = 1;
+                }
+                else
+                {
+                    _touchRegistry[touches]++;
+                }
+            }
+        }
+
+        private static GestureModifier TouchesToGestureModifier(int numberOfTouchInputs)
+        {
+            switch (numberOfTouchInputs)
+            {
+                case 1: return GestureModifier.OneFinger;
+                case 2: return GestureModifier.TwoFingers;
+                case 3: return GestureModifier.ThreeFingers;
+                case 4: return GestureModifier.FourFingers;
+                default: return GestureModifier.FiveFingers;
+            }
+        }
+
+        private static Option<int> GetMostCommonNumberOfTouchInputs(IDictionary<int, int> touchRegistry)
+        {
+            if (touchRegistry.Count > 0)
+            {
+                var touchesOrderedByAppearance = touchRegistry.OrderByDescending(pair => pair.Value);
+                return Option.Full(touchesOrderedByAppearance.First().Key);
+            }
+            return Option.Empty();
         }
 
         private Gesture ToSwipeGesture(Vector translation, Vector linearVelocity)
@@ -166,30 +255,6 @@ namespace Org.Interactivity.Recognizer
                                     intercept;
             var inverseProbablity = 1 + Math.Exp(-regressionScore);
             return 1 / inverseProbablity > 0.5;
-
         }
-    }
-
-    /// <summary>
-    /// Recognisable gestures. Has <see cref="FlagsAttribute">FlagsAttribute</see> to allow combinations
-    /// of values (e.g. <code>Gesture.SwipeUp | Gesture.SwipeDown</code>).
-    /// </summary>
-    [Flags]
-    public enum Gesture : byte
-    {
-        /// <summary>None </summary>
-        None = 0,
-        /// <summary>Swipe up</summary>
-        SwipeUp = 1,
-        /// <summary>Swipe down</summary>
-        SwipeDown = 2,
-        /// <summary>Swipe left</summary>
-        SwipeLeft = 4,
-        /// <summary>Swipe right</summary>
-        SwipeRight = 8,
-        /// <summary>Tap</summary>
-        Tap = 16,
-        /// <summary>All gestures</summary>
-        All = SwipeUp | SwipeDown | SwipeLeft | SwipeRight | Tap
     }
 }
