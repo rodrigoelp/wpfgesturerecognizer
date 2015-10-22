@@ -31,11 +31,11 @@ Then on your xaml page you should add a recognition area. It can be any [UI elem
 
 ## Contributors
 
-**What to contribute? Or add more gestures like rotation, skew, and/or zoom?**
+**Want to contribute? Or add more gestures like rotation, skew, and/or zoom?**
 
 Submit your pull request!
 
-**What a specific gesture?**
+**Want a specific gesture?**
 
 Create an issue to be able to track it.
 
