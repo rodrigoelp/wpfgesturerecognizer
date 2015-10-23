@@ -163,5 +163,10 @@ namespace Org.Interactivity.Recognizer
         {
             return instance?.ToOption() ?? Option.Empty();
         }
+
+        public static Option<T> AsOption<T>(this object instance) where T : class
+        {
+            return (instance as T).ToOption();
+        }
     }
 }
