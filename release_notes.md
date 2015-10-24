@@ -1,3 +1,10 @@
+### 1.0.4 (Release October 2015)
+* Fixed a readme typo in which I typed "what to contribute" as opposed to "want to contribute". (sigh...)
+* Included multi-touch handling (up to 5 points) when recognising swipes and taps. By default all gestures will trigger 
+  for a single touch point but it can be expanded by using the GestureModifier dependency property.
+* Re-wrote GestureRecognizer to delegate event subscription and surface management to an unique instance.
+* Used Delorean to travel to October 26, 1985 to tell Doc we don't have hoverboards in 2015.
+
 ### 1.0.3 (Released May 2015)
 * Change package dependency to an internal dependency to include latest binaries of Microsoft Expression SDK for .net framework 4.6
 
