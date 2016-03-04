@@ -75,6 +75,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="BooleanToScrollBarVisibility.cs" />
+    <Compile Include="IncreaseLengthByIntConverter.cs" />
+    <Compile Include="HalfLengthConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
