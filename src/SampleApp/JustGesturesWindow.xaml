@@ -1,8 +1,8 @@
-﻿<Window x:Class="SampleApp.MainWindow"
+﻿<Window x:Class="SampleApp.JustGesturesWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        Title="MainWindow" Height="350" Width="525"
+        Title="Swipe to change the colour of the gray box." Height="350" Width="525"
         xmlns:recognizer="clr-namespace:Org.Interactivity.Recognizer;assembly=Org.Interactivity.Recognizer"
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" WindowState="Maximized">
     <Grid>

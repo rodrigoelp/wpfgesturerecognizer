@@ -1,8 +1,8 @@
 ﻿namespace SampleApp
 {
-    public partial class MainWindow
+    public partial class JustGesturesWindow
     {
-        public MainWindow()
+        public JustGesturesWindow()
         {
             InitializeComponent();
         }

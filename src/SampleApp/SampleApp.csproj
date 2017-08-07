@@ -67,7 +67,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
+    <Page Include="AppLauncher.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GesturesOnGesturesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="JustGesturesWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -75,8 +83,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="AppLauncher.xaml.cs">
+      <DependentUpon>AppLauncher.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GesturesOnGesturesWindow.xaml.cs">
+      <DependentUpon>GesturesOnGesturesWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="JustGesturesWindow.xaml.cs">
+      <DependentUpon>JustGesturesWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

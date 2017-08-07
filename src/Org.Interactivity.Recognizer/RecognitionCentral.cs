@@ -88,6 +88,7 @@ namespace Org.Interactivity.Recognizer
                 {
                     e.ManipulationContainer = el;
                     e.Mode = ManipulationModes.All;
+                    e.Handled = true;
 
                     if (_gestureSurfaceTouchRegistry.ContainsKey(el))
                     {
@@ -119,6 +120,7 @@ namespace Org.Interactivity.Recognizer
             sender.AsOption<UIElement>().Do(
                 element =>
                 {
+                    e.Handled = true;
                     var modifier =
                         GetMostRepresentativeNumberOfTouchPoints(_gestureSurfaceTouchRegistry[element])
                             .Map(ToGestureModifier);
